@@ -1,0 +1,113 @@
+<fieldset>
+    <legend>Impostazioni generali</legend>
+
+    <div class="field">
+        <div class="field-meta">
+            <label for="api_url">URL API Wikibase</label>
+        </div>
+        <div class="inputs">
+            <input type="text" id="api_url" name="api_url"
+                   value="<?= $this->escapeHtml($apiUrl) ?>"
+                   style="width:100%">
+            <p class="field-description">
+                Es: https://iconotecausi.wikibase.cloud/w/api.php
+            </p>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="field-meta">
+            <label for="languages">Lingue (separate da virgola)</label>
+        </div>
+        <div class="inputs">
+            <input type="text" id="languages" name="languages"
+                   value="<?= $this->escapeHtml($languages) ?>">
+            <p class="field-description">Es: it, en</p>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="field-meta">
+            <label for="instance_of_pid">PID "istanza di"</label>
+        </div>
+        <div class="inputs">
+            <input type="text" id="instance_of_pid" name="instance_of_pid"
+                   value="<?= $this->escapeHtml($instanceOfPid) ?>">
+            <p class="field-description">Es: P5</p>
+        </div>
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>Mappatura proprietà Omeka → classe Wikibase</legend>
+    <p class="field-description">
+        Per ogni proprietà Omeka specifica il QID della classe Wikibase
+        da usare come filtro. Lascia QID vuoto per nessun filtro.
+    </p>
+
+    <table id="mapping-table" class="tablesaw">
+        <thead>
+            <tr>
+                <th>Proprietà Omeka</th>
+                <th>QID classi Wikibase (separate da virgola)</th>
+                <th>Istanza di</th>
+                <th>Precompila</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($mapping as $term => $propConfig): ?>
+            <tr>
+                <td>
+                    <input type="text" name="prop_term[]"
+                        value="<?= $this->escapeHtml($term) ?>"
+                        placeholder="dcterms:creator">
+                </td>
+                <td>
+                    <input type="text" name="prop_classes[]"
+                        value="<?= $this->escapeHtml(implode(',', $propConfig['classes'] ?? [])) ?>"
+                        placeholder="Q1640,Q1641">
+                </td>
+                <td>
+                    <input type="text" name="prop_label[]"
+                        value="<?= $this->escapeHtml($propConfig['label'] ?? '') ?>"
+                        placeholder="es: Autore, Luogo...">
+                </td>
+                <td>
+                    <select name="prop_preload[]">
+                        <option value="0" <?= empty($propConfig['preload']) ? 'selected' : '' ?>>No</option>
+                        <option value="1" <?= !empty($propConfig['preload']) ? 'selected' : '' ?>>Sì</option>
+                    </select>
+                </td>
+                <td>
+                    <button type="button" class="remove-row button small">Rimuovi</button>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+
+    <button type="button" id="add-row" class="button">
+        + Aggiungi proprietà
+    </button>
+</fieldset>
+
+<script>
+document.getElementById('add-row').addEventListener('click', function () {
+    var tbody = document.querySelector('#mapping-table tbody');
+    var row   = document.createElement('tr');
+    row.innerHTML =
+        '<td><input type="text" name="prop_term[]" placeholder="dcterms:creator"></td>' +
+        '<td><input type="text" name="prop_classes[]" placeholder="Q1640,Q1641"></td>' +
+        '<td><input type="text" name="prop_label[]" placeholder="es: Autore, Luogo..."></td>' +
+        '<td><select name="prop_preload[]"><option value="0">No</option><option value="1">Sì</option></select></td>' +
+        '<td><button type="button" class="remove-row button small">Rimuovi</button></td>';
+    tbody.appendChild(row);
+});
+
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-row')) {
+        e.target.closest('tr').remove();
+    }
+});
+</script>
