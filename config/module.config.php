@@ -44,6 +44,20 @@ return [
         'api_url'         => '',
         'languages'       => ['it', 'en'],
         'instance_of_pid' => 'P5',
-        'property_mapping' => [],
+        'property_mapping' => [
+            'dcterms:creator'     => [
+                'classes' => ['Q5'],  // senza label usa dcterms:creator
+                'label'   => 'Autore',
+                'preload' => true,  // se true, filtra i risultati in base alla classe anche se non è specificata la proprietà nella query
+            ],
+            'dcterms:contributor' => [
+                'label'   => 'Contributore',
+                'preload' => true,
+            ],
+            'dcterms:spatial'     => [
+                'label'   => 'Luogo',
+                'preload' => true,
+            ],
+        ],
     ],
 ];
